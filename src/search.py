@@ -50,11 +50,21 @@ def compute_idf(index_data: Dict[str, Any], term: str) -> float:
     """
     Compute inverse document frequency for a term.
 
-    idf(t) = log(N / (df(t) + 1))
+    Using the standard form:
+        idf(t) = log(N / df(t))
+    where:
+        N  = total number of documents
+        df = number of documents containing t
+
+    If df is 0, idf is defined as 0.0.
     """
     num_docs = index_data["num_docs"]
     df = index_data["doc_freq"].get(term, 0)
-    return math.log(num_docs / (df + 1)) if num_docs > 0 else 0.0
+
+    if num_docs <= 0 or df <= 0:
+        return 0.0
+
+    return math.log(num_docs / df)
 
 
 def score_document(index_data: Dict[str, Any], doc_id: int, terms: Iterable[str]) -> float:
